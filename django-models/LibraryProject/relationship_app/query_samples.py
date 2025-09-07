@@ -29,7 +29,7 @@ def run_queries():
     # 3. Retrieve the librarian for a library
     try:
         library = Library.objects.get(name="Central Library")
-        librarian = library.librarian  # OneToOne relationship
+        librarian = Librarian.objects.get(library=library)
         print(f"\nThe librarian of {library.name} is {librarian.name}.")
     except (Library.DoesNotExist, Librarian.DoesNotExist):
         print("Library or Librarian not found.")
