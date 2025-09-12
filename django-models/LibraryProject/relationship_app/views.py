@@ -8,7 +8,7 @@ from .models import Book
 from .models import Library
 
 
-class SignUpView(CreateView):
+class register(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration_app/register.html"
