@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "bookshelf",
     "relationship_app",
-    
+
 ]
 
 MIDDLEWARE = [
@@ -81,6 +81,10 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+LOGIN_REDIRECT_URL = "/"   # where users go after login
+LOGOUT_REDIRECT_URL = "login"   # after logout
+
 
 
 # Password validation
