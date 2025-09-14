@@ -3,11 +3,18 @@ from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from .models import Book
+from .forms import BookSearchForm
 
 # View Book (requires 'can_view')
 @permission_required('your_app_name.can_view', raise_exception=True)
 def book_list(request):
+    form = BookSearchForm(request.GET or None)
     books = Book.objects.all()
+
+    if form.is_valid():
+       search_query = form.cleaned_data["title"]
+       if search_query:
+           books = books.filter(title__icontains=search_query)  # ORM prevents SQL injection
     return render(request, "books/book_list.html", {"books": books})
 
 # Create Book (requires 'can_create')

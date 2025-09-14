@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-!s20^&v!+v%m)fqf1^119#^*)pt*gda($4o^c+ku5dg%or#%6o"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["yourdomain.com", "127.0.0.1"]
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -131,3 +132,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Tell Django to use the new CustomUser model
 AUTH_USER_MODEL = "bookshelf.CustomUser"
 
+# --- Security Headers ---
+SECURE_BROWSER_XSS_FILTER = True  # Prevent XSS attacks
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
+X_FRAME_OPTIONS = "DENY"  # Prevent clickjacking attacks
+
+# --- Secure Cookies ---
+CSRF_COOKIE_SECURE = True  # CSRF cookie only sent via HTTPS
+SESSION_COOKIE_SECURE = True  # Session cookie only sent via HTTPS
+
+# CSP Policy
+CSP_DEFAULT_SRC = ("'self'",)  
+CSP_SCRIPT_SRC = ("'self'", "cdn.jsdelivr.net")  # Allow your domain + CDN
+CSP_STYLE_SRC = ("'self'", "fonts.googleapis.com")  
+CSP_FONT_SRC = ("'self'", "fonts.gstatic.com")
