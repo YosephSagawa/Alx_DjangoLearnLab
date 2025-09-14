@@ -146,3 +146,28 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'", "cdn.jsdelivr.net")  # Allow your domain + CDN
 CSP_STYLE_SRC = ("'self'", "fonts.googleapis.com")  
 CSP_FONT_SRC = ("'self'", "fonts.gstatic.com")
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Force all HTTP -> HTTPS redirects
+SECURE_SSL_REDIRECT = True  # Redirect all non-HTTPS requests to HTTPS
+
+# HTTP Strict Transport Security (HSTS)
+# Tells browsers to only use HTTPS for this site for the specified seconds.
+# 31536000 = 1 year (recommended for production). Set to lower during testing.
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Apply HSTS to all subdomains
+SECURE_HSTS_PRELOAD = True  # Allows adding your domain to browser preload lists (optional)
+
+# Secure cookies — only sent over HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Protect against clickjacking
+X_FRAME_OPTIONS = "DENY"  # alternatives: 'SAMEORIGIN'
+
+# Prevent MIME type sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser's XSS filter (best-effort)
+SECURE_BROWSER_XSS_FILTER = True
