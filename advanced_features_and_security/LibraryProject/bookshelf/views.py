@@ -3,19 +3,29 @@ from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from .models import Book
-from .forms import BookSearchForm
+from .forms import ExampleForm
 
 # View Book (requires 'can_view')
 @permission_required('your_app_name.can_view', raise_exception=True)
 def book_list(request):
-    form = BookSearchForm(request.GET or None)
+    """List all books"""
     books = Book.objects.all()
+    return render(request, "bookshelf/book_list.html", {"books": books})
 
-    if form.is_valid():
-       search_query = form.cleaned_data["title"]
-       if search_query:
-           books = books.filter(title__icontains=search_query)  # ORM prevents SQL injection
-    return render(request, "books/book_list.html", {"books": books})
+def example_form_view(request):
+    """Render and process ExampleForm"""
+    if request.method == "POST":
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data["name"]
+            email = form.cleaned_data["email"]
+            message = form.cleaned_data["message"]
+            # handle data (save, send, etc.)
+            return render(request, "bookshelf/form_example.html", {"form": form, "success": True})
+    else:
+        form = ExampleForm()
+
+    return render(request, "bookshelf/form_example.html", {"form": form})
 
 # Create Book (requires 'can_create')
 @permission_required('your_app_name.can_create', raise_exception=True)
