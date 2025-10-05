@@ -86,3 +86,5 @@ class CommentForm(forms.ModelForm):
         if not content:
             raise forms.ValidationError('Comment cannot be empty.')
         return content
+    
+#TagWidget()
