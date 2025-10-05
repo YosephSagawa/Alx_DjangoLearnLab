@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Profile, Post, Comment
+from .models import Profile, Post, Comment, Tag
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -33,6 +33,12 @@ class ProfileForm(forms.ModelForm):
 
 
 class PostForm(forms.ModelForm):
+    # user-facing tag input, comma-separated
+    tags_field = forms.CharField(
+        required=False,
+        help_text="Comma-separated tags (e.g. django, python).",
+        widget=forms.TextInput(attrs={'placeholder': 'tag1, tag2, tag3', 'class': 'form-control'})
+    )
     class Meta:
         model = Post
         fields = ['title', 'content']
@@ -46,6 +52,22 @@ class PostForm(forms.ModelForm):
         if not title:
             raise forms.ValidationError('Title is required.')
         return title
+    
+    def clean_tags_field(self):
+        raw = (self.cleaned_data.get('tags_field') or '').strip()
+        # optional: sanitize, remove duplicates, lower-case
+        if not raw:
+            return []
+        tag_names = [t.strip() for t in raw.split(',') if t.strip()]
+        # unique, keep order
+        seen = set()
+        result = []
+        for t in tag_names:
+            key = t.lower()
+            if key not in seen:
+                seen.add(key)
+                result.append(t)
+        return result
     
 class CommentForm(forms.ModelForm):
     class Meta:

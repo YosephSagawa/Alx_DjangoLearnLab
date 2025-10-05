@@ -6,7 +6,7 @@ from .forms import CustomUserCreationForm, UserUpdateForm, ProfileForm, PostForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import Post,Comment
+from .models import Post,Comment,Tag
 from django.shortcuts import get_object_or_404
 
 def register_view(request):
@@ -78,12 +78,40 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         # Set the author to the logged-in user
         form.instance.author = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)  # saves Post, but tags not yet assigned
+        # process tags
+        tag_names = form.cleaned_data.get('tags_field', [])
+        self._assign_tags(self.object, tag_names)
+        return response
+    def _assign_tags(self, post, tag_names):
+        post.tags.clear()
+        for name in tag_names:
+            tag_obj, _ = Tag.objects.get_or_create(name=name.strip())
+            post.tags.add(tag_obj)
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_form.html'
+
+
+    def get_initial(self):
+        initial = super().get_initial()
+        # prefill tags_field with comma-separated tag names
+        initial['tags_field'] = ', '.join([t.name for t in self.get_object().tags.all()])
+        return initial
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        tag_names = form.cleaned_data.get('tags_field', [])
+        self._assign_tags(self.object, tag_names)
+        return response
+
+    def _assign_tags(self, post, tag_names):
+        post.tags.clear()
+        for name in tag_names:
+            tag_obj, _ = Tag.objects.get_or_create(name=name.strip())
+            post.tags.add(tag_obj)
 
     def test_func(self):
         post = self.get_object()
@@ -139,3 +167,42 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         # after deletion, go back to the post detail page
         return self.object.post.get_absolute_url()
+    
+# View to list posts by tag
+class PostsByTagView(ListView):
+    model = Post
+    template_name = 'blog/posts_by_tag.html'
+    context_object_name = 'posts'
+    paginate_by = 10
+
+    def get_queryset(self):
+        self.tag = get_object_or_404(Tag, slug=self.kwargs.get('tag_slug'))
+        return Post.objects.filter(tags=self.tag, published=True).order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['tag'] = self.tag
+        return ctx
+
+
+# Search results
+class SearchResultsView(ListView):
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+    paginate_by = 10
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '').strip()
+        if not q:
+            return Post.objects.none()
+        # search title, content, and tags name
+        return Post.objects.filter(
+            Q(title__icontains=q) | Q(content__icontains=q) | Q(tags__name__icontains=q),
+            published=True
+        ).distinct().order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['query'] = self.request.GET.get('q', '')
+        return ctx

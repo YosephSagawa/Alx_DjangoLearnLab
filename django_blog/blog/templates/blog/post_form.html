@@ -5,7 +5,12 @@
   <h1>{% if form.instance.pk %}Edit Post{% else %}New Post{% endif %}</h1>
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.non_field_errors }}
+    {{ form.title.label_tag }} {{ form.title }}
+    {{ form.content.label_tag }} {{ form.content }}
+    <label for="{{ form.tags_field.id_for_label }}">Tags</label>
+    {{ form.tags_field }}
+    <p class="help-text">{{ form.tags_field.help_text }}</p>
     <button type="submit">Save</button>
   </form>
   <p><a href="{% url 'blog:post_list' %}">Back to posts</a></p>

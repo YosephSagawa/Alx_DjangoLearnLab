@@ -4,11 +4,13 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.urls import reverse
+from django.utils.text import slugify
 
 
 # Create your models here.
 class Post(models.Model):
     title = models.CharField(max_length=200)
+    tags = models.ManyToManyField("Tag", blank=True, related_name="posts")
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -56,3 +58,27 @@ class Comment(models.Model):
     def get_absolute_url(self):
         # redirect back to the post detail after operations
         return self.post.get_absolute_url()
+    
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=60, unique=True, blank=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)[:60]
+            # ensure unique slug (append number if needed)
+            base = self.slug
+            counter = 1
+            while Tag.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base}-{counter}"
+                counter += 1
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('blog:posts_by_tag', kwargs={'tag_slug': self.slug})

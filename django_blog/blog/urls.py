@@ -28,4 +28,9 @@ urlpatterns = [
     # edit/delete specific comment by comment pk
     path('comment/<int:pk>/update/', views.CommentUpdateView.as_view(), name='comment_update'),
     path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment_delete'),
+
+    # blog/urls.py (add these)
+    path('tags/<slug:tag_slug>/', views.PostsByTagView.as_view(), name='posts_by_tag'),
+    path('search/', views.SearchResultsView.as_view(), name='search_results'),
+
 ]
