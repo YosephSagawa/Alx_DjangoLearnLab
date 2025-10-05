@@ -127,6 +127,16 @@ STATICFILES_DIRS = [
 
 TEMPLATES = [
     {
-        'DIRS': [BASE_DIR / 'templates'],
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',  # required
+        'DIRS': [BASE_DIR / 'templates/blog/'],  # your custom templates directory
+        'APP_DIRS': True,  # enables Django to find templates inside app directories
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
     },
 ]
