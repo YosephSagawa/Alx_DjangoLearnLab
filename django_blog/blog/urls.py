@@ -32,5 +32,6 @@ urlpatterns = [
     # blog/urls.py (add these)
     path('tags/<slug:tag_slug>/', views.PostsByTagView.as_view(), name='posts_by_tag'),
     path('search/', views.SearchResultsView.as_view(), name='search_results'),
+    path("posts_tag/", PostByTagListView.as_view()),
 
 ]
