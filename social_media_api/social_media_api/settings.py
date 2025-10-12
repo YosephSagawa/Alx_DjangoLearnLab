@@ -53,6 +53,18 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "social_media_api.urls"
 
+# Add this near the bottom of settings.py
+AUTH_USER_MODEL = 'accounts.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+    'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -123,3 +135,7 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Media settings for profile pictures (adjust for production)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
