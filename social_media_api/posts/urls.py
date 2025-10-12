@@ -10,5 +10,8 @@ router.register(r'feed', FeedAPIView, basename='feed')
 
 urlpatterns = [
     path('feed/', FeedAPIView.as_view(), name='feed'),
+    path('posts/<int:pk>/like/', PostViewSet.as_view({'post': 'like'}), name='post-like'),
+    path('posts/<int:pk>/unlike/', PostViewSet.as_view({'post': 'unlike'}), name='post-unlike'),
 ]
+
 urlpatterns = router.urls
