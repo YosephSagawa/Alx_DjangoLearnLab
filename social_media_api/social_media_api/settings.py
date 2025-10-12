@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-btwtll+0p1f23(573-lzky8z-6snfflvc7d8k8=1(yl3ye#%(3"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -52,7 +52,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "social_media_api.urls"
+ROOT_URLCONF = 'social_media_api.urls'
+WSGI_APPLICATION = 'social_media_api.wsgi.application'
 
 # Add this near the bottom of settings.py
 AUTH_USER_MODEL = 'accounts.User'
@@ -140,3 +141,31 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Media settings for profile pictures (adjust for production)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# SECURITY HEADERS
+# -------------------------------
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_SSL_REDIRECT = True  # Redirect HTTP → HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# -------------------------------
+# LOGGING (Optional)
+# -------------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler',},
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
+
