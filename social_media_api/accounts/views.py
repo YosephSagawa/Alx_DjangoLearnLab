@@ -102,3 +102,6 @@ class FollowersListAPIView(APIView):
         followers = request.user.followers.all()
         serializer = UserSerializer(followers, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+# generics.GenericAPIView 
+# CustomUser.objects.all()
