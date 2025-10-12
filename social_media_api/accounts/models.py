@@ -13,6 +13,21 @@ class User(AbstractUser):
     blank=True,
     )
 
+    def __str__(self):
+        return self.username
+
+
+    def follow(self, user):
+        self.following.add(user)
+
+
+    def unfollow(self, user):
+        self.following.remove(user)
+
+
+    def is_following(self, user):
+        return self.following.filter(id=user.id).exists()
+
 
 def __str__(self):
     return self.username
